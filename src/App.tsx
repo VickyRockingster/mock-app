@@ -1,10 +1,10 @@
 import './App.css';
 import HomePage from './components/home/HomePage';
-import GuidesPage from './components/connections/guides/GuidesPage';
-import LifeLessonsPage from './components/connections/lifeLessons/LifeLessonsPage';
-import { Route, Routes } from 'react-router-dom';
+import { GuidesPage, NewGuidePage} from './components/connections/guides/GuidesPage';
 import { LegalPage, LovedOnesPage, PersonalInfoPage } from './components/otherPages'
 import { LettersHomePage, LetterPage, NewLetterPage } from './components/connections/lettersHome/LettersHomePage';
+import { LifeLessonsPage, NewLifeLessonPage } from './components/connections/lifeLessons/LifeLessonsPage';
+import { Route, Routes } from 'react-router-dom';
 
 export default function App() {
   return (
@@ -20,10 +20,14 @@ export default function App() {
 					<Route path=':letterHomeId' element={<LetterPage />} />
 				</Route>
 
-				<Route path='/life-lessons' element={<LifeLessonsPage />} />
-				<Route path='/guides' element={<GuidesPage />} />
+				<Route path='/life-lessons' element={<LifeLessonsPage />}>
+					<Route path='new' element={<NewLifeLessonPage />} />
+				</Route>
 
-				
+				<Route path='/guides' element={<GuidesPage />}>
+					<Route path='new' element={<NewGuidePage />} />
+				</Route>
+
 				<Route path='*' element={<h1>Page Not Found</h1>} />
 			</Routes>
     </div>

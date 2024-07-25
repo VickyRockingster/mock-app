@@ -1,5 +1,6 @@
 import ConnectionsTemplate from '../ConnectionsTemplate';
 import MainTemplate from '../../MainTemplate';
+import WriteInput from '../WriteInput';
 import { Outlet } from 'react-router-dom';
 
 export function LettersHomePage() {
@@ -21,10 +22,5 @@ export function LetterPage() {
 }
 
 export function NewLetterPage() {
-	return (
-		<div>
-			<div>New Letter</div>
-		</div>
-
-	)
+	return <div><WriteInput /></div>
 }
