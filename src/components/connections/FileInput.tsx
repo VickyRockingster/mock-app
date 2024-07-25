@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 
 export default function FileInput() {
 	const [fileInputValue, setFileInputValue] = useState('');
@@ -13,9 +13,10 @@ export default function FileInput() {
   };
 
 	return (
-		<form>
-			<label htmlFor='file-upload'>Upload</label>
+		<form className='file-upload-form'>
+			<label className='visually-hidden' htmlFor='file-upload'>Upload</label>
 			<input
+			className='file-upload-input'
 			accept='image/*'
 			name='file-upload'
 			id='file-upload'
@@ -24,7 +25,14 @@ export default function FileInput() {
 			onChange={handleInputChange}
 			>
 			</input>
-			<button type='submit' onSubmit={handleSubmit}>Submit</button>
+			{ 
+			fileInputValue ? 
+				<Fragment>
+					<div className='file-name'>{ fileInputValue }</div>
+					<button type='submit' onSubmit={handleSubmit}>Submit</button> 
+				</Fragment>
+			: null
+			}
 		</form>
 	)
 }

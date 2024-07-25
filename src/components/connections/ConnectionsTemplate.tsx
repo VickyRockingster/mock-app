@@ -1,3 +1,4 @@
+import './ConnectionsTemplate.css'
 import FileInput from './FileInput';
 import { useLocation } from 'react-router-dom';
 
@@ -6,8 +7,8 @@ export default function ConnectionsTemplate() {
 	console.log('location;', location.pathname)
 
 	return (
-		<section>
+		<div className='forms-display'>
 			<FileInput />
-		</section>
+		</div>
 	)
 }
