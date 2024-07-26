@@ -36,12 +36,12 @@ export function LovedOnesPage() {
 
 	return (
 		<MainTemplate title='Loved Ones'>
-			<ul>
+			<ul className='loved-ones-list'>
 				{lovedOnes.map((person, i) =>
-					<li key={i}>
-						<div>{person.name}</div>
-						<div>{person.email}</div>
-						<div>{person.mobile}</div>
+					<li className='loved-ones-list-item' key={i}>
+						<div className='loved-ones-list-item-name'>{person.name}</div>
+						<div className='loved-ones-list-item-email'>{person.email}</div>
+						<div className='loved-ones-list-item-mobile'>{person.mobile}</div>
 					</li>
 				)}
 			</ul>

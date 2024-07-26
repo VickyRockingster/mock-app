@@ -46,3 +46,16 @@
 		width: 600px;
 	}
 }
+
+.loved-ones-list {
+	display: flex;
+	flex-flow: column nowrap;
+	gap: 16px;
+	list-style-type: none;
+	padding: 0;
+	margin: 24px 0;
+}
+
+.loved-ones-list-item-name {
+	font-weight: bold;
+}
