@@ -43,6 +43,7 @@
 
 .new-connection-button-text {
 	font-size: 12px;
+	margin: 8px 0;
 	position: absolute;
   bottom: 0;
 }
