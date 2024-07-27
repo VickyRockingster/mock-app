@@ -47,3 +47,50 @@
 	position: absolute;
   bottom: 0;
 }
+
+.connection-items-list {
+	display: flex;
+	flex-flow: row wrap;
+	gap: 16px;
+	list-style-type: none;
+	padding: 0;
+	margin: 24px 0;
+}
+
+.connection-item {
+	background-color: #D9D9D9;
+	border: solid;
+	padding: 8px;
+	color: black;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: minmax(0, 2fr) auto;
+	grid-template-areas: 
+		'icon'
+		'icon'
+		'name'
+		'sent';
+	place-items: center;
+	text-decoration: none;
+	
+
+	@media (width > 700px) {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+		grid-template-rows: 1fr 1fr;
+		grid-template-areas: 
+			'icon name'
+			'icon sent'
+	}
+}
+
+.connection-icon {
+ grid-area: icon;
+} 
+
+.connection-name {
+ grid-area: name;
+}
+
+.connection-sent {
+ grid-area: sent;
+}

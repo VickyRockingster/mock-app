@@ -1,13 +1,57 @@
-import { useState } from 'react';
+import axios from "axios";
 import React from 'react';
+import { useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
+import { useLocation } from 'react-router-dom';
+import useSWR from "swr";
+
+const handlePost = async (resourcePath: any, writeInputValue: any) => {
+	// event.preventDefault();
+
+	const formData: any = new FormData();
+	formData.append('text', writeInputValue);
+	try {
+		const response = await axios.post(
+		`http://localhost:8000/api/write/${resourcePath}/`,
+		formData,
+		{ headers: {'Content-Type': 'multipart/form-data'}})
+
+		console.log('From WriteInput:', response);
+		console.log('From WriteInput:', response.data);
+
+	} catch(error) {
+		console.error('Error:', error)
+	}
+}
 
 export default function WriteInput() {
 	const [writeInputValue, setWriteInputValue] = useState('');
 
-	const handleSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
-		event.preventDefault();
-  };
+	const location = useLocation()
+	const resourcePath = location.pathname.split('/')[1]
+
+	// console.log('writeInputValue: ', writeInputValue)
+
+	const handlePost = async (resourcePath: any, writeInputValue: any) => {
+		// event.preventDefault();
+	
+		const formData: any = new FormData();
+		formData.append('text', writeInputValue);
+		try {
+			const response = await axios.post(
+			`http://localhost:8000/api/write/${resourcePath}/`,
+			formData,
+			{ headers: {'Content-Type': 'multipart/form-data'}})
+	
+			console.log('From WriteInput:', response);
+			console.log('From WriteInput:', response.data);
+	
+		} catch(error) {
+			console.error('Error:', error)
+		}
+	}
+
+	const handleSubmit = useSWR(resourcePath, handlePost)
 
 	return (
 		<form className='form'>
@@ -24,7 +68,7 @@ export default function WriteInput() {
        	 	  { value: 'First.Name', title: 'First Name' },
         	  { value: 'Email', title: 'Email' },
         	],
-        	ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+        	ai_request: (request: any, respondWith: { string: (arg0: () => Promise<never>) => any; }) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
       	}}
 				value={ writeInputValue }
       	onEditorChange={(newValue) => setWriteInputValue(newValue)}
