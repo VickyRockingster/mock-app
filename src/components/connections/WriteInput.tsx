@@ -1,60 +1,38 @@
-import axios from "axios";
-import React from 'react';
-import { useState } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
-import { useLocation } from 'react-router-dom';
-import useSWR from "swr";
-
-const handlePost = async (resourcePath: any, writeInputValue: any) => {
-	// event.preventDefault();
-
-	const formData: any = new FormData();
-	formData.append('text', writeInputValue);
-	try {
-		const response = await axios.post(
-		`http://localhost:8000/api/write/${resourcePath}/`,
-		formData,
-		{ headers: {'Content-Type': 'multipart/form-data'}})
-
-		console.log('From WriteInput:', response);
-		console.log('From WriteInput:', response.data);
-
-	} catch(error) {
-		console.error('Error:', error)
-	}
-}
+import axios from "axios"
+import React from 'react'
+import { Editor } from '@tinymce/tinymce-react'
+import { useLocation } from 'react-router-dom'
+import { useState } from 'react'
 
 export default function WriteInput() {
-	const [writeInputValue, setWriteInputValue] = useState('');
+	const [writeInputValue, setWriteInputValue] = useState('')
 
 	const location = useLocation()
 	const resourcePath = location.pathname.split('/')[1]
 
-	// console.log('writeInputValue: ', writeInputValue)
-
-	const handlePost = async (resourcePath: any, writeInputValue: any) => {
-		// event.preventDefault();
-	
-		const formData: any = new FormData();
-		formData.append('text', writeInputValue);
+	const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault()
+		
+		// Do not submit if there's only white space
+		if (writeInputValue.trim().length === 0) {
+			return
+		}
+		const formData: any = new FormData()
+		formData.append('text', writeInputValue)
 		try {
-			const response = await axios.post(
+			await axios.post(
 			`http://localhost:8000/api/write/${resourcePath}/`,
 			formData,
 			{ headers: {'Content-Type': 'multipart/form-data'}})
-	
-			console.log('From WriteInput:', response);
-			console.log('From WriteInput:', response.data);
-	
 		} catch(error) {
 			console.error('Error:', error)
 		}
+		//Reset form after submission
+		setWriteInputValue('')
 	}
 
-	const handleSubmit = useSWR(resourcePath, handlePost)
-
 	return (
-		<form className='form'>
+		<form className='form' onSubmit={handleSubmit}>
 			<label className='visually-hidden' htmlFor=''>Write a new</label>
 			<Editor
       	apiKey='vmxaq2auufsx6jd67q4805hs7nrm5k1txn1urkhvi4cemd6g'
@@ -68,13 +46,13 @@ export default function WriteInput() {
        	 	  { value: 'First.Name', title: 'First Name' },
         	  { value: 'Email', title: 'Email' },
         	],
-        	ai_request: (request: any, respondWith: { string: (arg0: () => Promise<never>) => any; }) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+        	ai_request: (request: any, respondWith: { string: (arg0: () => Promise<never>) => any }) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
       	}}
-				value={ writeInputValue }
+				value={writeInputValue}
       	onEditorChange={(newValue) => setWriteInputValue(newValue)}
-				textareaName='description'
+				textareaName='text'
     	/>
-			<button type='submit' onSubmit={handleSubmit}>Submit</button> 
+			<button type='submit'>Submit</button> 
 		</form>
 	)
 }
