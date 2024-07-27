@@ -5,7 +5,7 @@ import GuideSvg from '../svgs/guide'
 import LessonSvg from '../svgs/lesson'
 import LetterSvg from '../svgs/letter'
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useParams, useNavigate } from 'react-router-dom'
 
 type UploadedData = {
 	created: string
@@ -34,9 +34,10 @@ function NewConnectionButton() {
 }
 
 function ConnectionItem(props: UploadedData | WrittenData) {
-	const { name, pk, created } = props
+	const { name, created } = props
 	const [ icon, setIcon ] = useState()
 	const location = useLocation()
+	const id = useParams()
 
 	useEffect(() => {
 		switch (location.pathname) {
@@ -83,16 +84,11 @@ const getConnections = async (
 			responseType: 'json'
 		})
 		const responses = await Promise.allSettled([firstCall, secondCall])
-
-		// const uploadedData: Array<UploadedData> = JSON.parse(responses[0].value.data)
 		const uploadedData: Array<UploadedData> = responses[0].value.data
 		const writtenData: Array<WrittenData> = responses[1].value.data
-
 		if (responses[0].status === 'fulfilled' && responses[1].status === 'fulfilled') {
 			setUploadedConnectionListItems([...uploadedConnectionListItems, ...uploadedData])
 			setWrittenConnectionListItems([...writtenConnectionListItems, ...writtenData])
-			console.log('*writtenData', writtenData);
-			console.log('*uploadedData', uploadedData);
 		}
 	} catch (error) {
 		console.error('Error:', error)
@@ -113,13 +109,13 @@ export default function ConnectionsTemplate() {
 			setWrittenConnectionListItems,
 			uploadedConnectionListItems,
 			writtenConnectionListItems)
-	}, [location.pathname])
+	}, [ location.pathname])
 
 	const uploadedListItems = uploadedConnectionListItems.map(listItem => (
-		<li key={listItem.pk} className='connection-item'><ConnectionItem name={listItem.name} pk={listItem.pk} created={listItem.created}/></li>
+		<li key={listItem.pk} className='connection-item'><ConnectionItem name={listItem.name} created={listItem.created}/></li>
 	))
 	const writtenListItems = writtenConnectionListItems.map(listItem => (
-		<li key={listItem.pk + '50'} className='connection-item'><ConnectionItem pk={listItem.pk} created={listItem.created}/></li>
+		<li key={listItem.pk + '50'} className='connection-item'><ConnectionItem created={listItem.created}/></li>
 	))
 	return (
 		<div>
@@ -128,8 +124,8 @@ export default function ConnectionsTemplate() {
 				<NewConnectionButton />
 			</div>
 			<ul className='connection-items-list'>
-				{writtenListItems}
 				{uploadedListItems}
+				{writtenListItems}
 			</ul>
 		</div>
 	)

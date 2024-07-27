@@ -12,15 +12,6 @@ export function LettersHomePage() {
 	)
 }
 
-export function LetterPage() {
-	return (
-		<div>
-			<div>This Letter</div>
-		</div>
-
-	)
-}
-
 export function NewLetterPage() {
 	return <div><WriteInput /></div>
 }
