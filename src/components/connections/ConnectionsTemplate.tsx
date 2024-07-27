@@ -1,13 +1,23 @@
 import './ConnectionsTemplate.css'
 import axios from 'axios'
-// import fs from fs
-import useSWR, { Fetcher } from 'swr'
 import FileInput from './FileInput'
 import GuideSvg from '../svgs/guide'
 import LessonSvg from '../svgs/lesson'
 import LetterSvg from '../svgs/letter'
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+
+type UploadedData = {
+	created: string
+	name: string
+	pk: Number
+}
+
+type WrittenData = {
+	created: string
+	text: string
+	pk: Number
+}
 
 function NewConnectionButton() {
 	const navigate = useNavigate()
@@ -23,9 +33,9 @@ function NewConnectionButton() {
 	)
 }
 
-function ConnectionItem(props: any) {
-	const { name, sent } = props
-	const [ icon, setIcon ] = useState(null)
+function ConnectionItem(props: UploadedData | WrittenData) {
+	const { name, pk, created } = props
+	const [ icon, setIcon ] = useState()
 	const location = useLocation()
 
 	useEffect(() => {
@@ -40,26 +50,31 @@ function ConnectionItem(props: any) {
 				setIcon(<GuideSvg />)
 				break
 			}
-	}, [icon])
+	}, [location])
 
+	const sent = new Date(created).toLocaleDateString()
 
 	return (
-		<Fragment>
+		<>
 			<div className='connection-icon'>{ icon }</div>
-			<div className='connection-name'>{ name }</div>
-			<div className='connection-sent'>{ sent }</div>
-		</Fragment>
+			<div className='connection-name'>{ name ? name : null}</div>
+			<div className='connection-sent'>Sent { sent }</div>
+		</>
 	)
 }
 
-const uploadsFetcher = async (resourcePath: string) => {
+const getConnections = async (
+	resourcePath: string,
+	setUploadedConnectionListItems: React.Dispatch<React.SetStateAction<UploadedData[]>>,
+	setWrittenConnectionListItems: React.Dispatch<React.SetStateAction<WrittenData[]>>,
+	uploadedConnectionListItems: Array<any>,
+	writtenConnectionListItems: Array<any>
+) => {
 	try {
-		// const response = await fetch(`http://localhost:8000/api/upload/${resourcePath}/`)
-		// const responses = await Promise.allSettled([fetch(`http://localhost:8000/api/upload/${resourcePath}/`), fetch(`http://localhost:8000/api/write/${resourcePath}/`)])
 		const firstCall = axios({
 			method: 'get',
 			url: `http://localhost:8000/api/upload/${resourcePath}/`,
-			responseType: 'image/*'
+			responseType: 'json'
 		})
 
 		const secondCall = axios({
@@ -67,75 +82,45 @@ const uploadsFetcher = async (resourcePath: string) => {
 			url: `http://localhost:8000/api/write/${resourcePath}/`,
 			responseType: 'json'
 		})
-			// .then(function (response) {
-			// 	// response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
-			// 	console.log('response.data', response.data)
-			// });
 		const responses = await Promise.allSettled([firstCall, secondCall])
 
-		
-			if (responses[0].status === 'fulfilled') {
-				// responses[0].value.data.pipe(fs.createWriteStream('nature.jpg'))
-				console.log(responses[0].status,responses[0].value.data);
-				console.log(responses[1].status,responses[1].value.data);
-			} else {
-				console.log(responses[0].status,responses[0].reason);
-			}
-		console.log('responses from UPLOADS:', responses)
-		// return responses[0].json()
-	} catch (error) {
-		console.error('Error:', error)
-	}
-}
+		// const uploadedData: Array<UploadedData> = JSON.parse(responses[0].value.data)
+		const uploadedData: Array<UploadedData> = responses[0].value.data
+		const writtenData: Array<WrittenData> = responses[1].value.data
 
-const writtenFetcher = async (resourcePath: string) => {
-	try {
-		const response = await fetch(`http://localhost:8000/api/write/${resourcePath}/`)
-		if (!response.ok) {
-			throw new Error('Network response was not ok');
+		if (responses[0].status === 'fulfilled' && responses[1].status === 'fulfilled') {
+			setUploadedConnectionListItems([...uploadedConnectionListItems, ...uploadedData])
+			setWrittenConnectionListItems([...writtenConnectionListItems, ...writtenData])
+			console.log('*writtenData', writtenData);
+			console.log('*uploadedData', uploadedData);
 		}
-		console.log('response.json() from WRITTEN:', response.json())
-		return response.json()
 	} catch (error) {
 		console.error('Error:', error)
 	}
 }
 
 export default function ConnectionsTemplate() {
-	const [ connectionListItems, setConnectionListItems ] = useState<Array<any>>([])
+	const [ uploadedConnectionListItems, setUploadedConnectionListItems ] = useState<Array<UploadedData>>([])
+	const [ writtenConnectionListItems, setWrittenConnectionListItems ] = useState<Array<WrittenData>>([])
 	
 	const location = useLocation()
 	const resourcePath = location.pathname.split('/')[1]
+	
+	useEffect(() => {
+		getConnections(
+			resourcePath, 
+			setUploadedConnectionListItems, 
+			setWrittenConnectionListItems,
+			uploadedConnectionListItems,
+			writtenConnectionListItems)
+	}, [location.pathname])
 
-	// useEffect(() => {
-	// 	fetch(`http://localhost:8000/api/upload/${resourcePath}/`)
-	// 		.then(response => {
-	// 			if (!response.ok) {
-	// 				throw new Error('Network response was not ok');
-	// 			}
-	// 			return response.json();
-	// 		})
-	// 		.then(files => console.log('Files:', files))
-	// 		.catch(error => console.error('Error:', error));
-
-	// 	fetch(`http://localhost:8000/api/write/${resourcePath}/`)
-	// 		.then(response => {
-	// 			if (response.ok) {
-	// 				return response.json();
-	// 			}
-	// 			throw new Error('Network response was not ok');
-	// 		})
-	// 		.then(writtenData => console.log('Written Data:', writtenData))
-	// 		.catch(error => console.error('Error:', error))
-	// }, [connectionListItems])
-	// const  urls = [ `http://localhost:8000/api/upload/${resourcePath}/`, `http://localhost:8000/api/write/${resourcePath}/`]
-
-	// const writtenData = useSWR(resourcePath, writtenFetcher)
-	const data = useSWR(resourcePath, uploadsFetcher).data
-	console.log('**uploadsData:', data)
-	// console.log('**writtenData:', writtenData)
-
-
+	const uploadedListItems = uploadedConnectionListItems.map(listItem => (
+		<li key={listItem.pk} className='connection-item'><ConnectionItem name={listItem.name} pk={listItem.pk} created={listItem.created}/></li>
+	))
+	const writtenListItems = writtenConnectionListItems.map(listItem => (
+		<li key={listItem.pk + '50'} className='connection-item'><ConnectionItem pk={listItem.pk} created={listItem.created}/></li>
+	))
 	return (
 		<div>
 			<div className='forms-display'>
@@ -143,10 +128,8 @@ export default function ConnectionsTemplate() {
 				<NewConnectionButton />
 			</div>
 			<ul className='connection-items-list'>
-				<li className='connection-item'><ConnectionItem name={'First'} sent={new Date().toJSON()}/></li>
-				<li className='connection-item'><ConnectionItem name={'Second'} sent={new Date().toJSON()}/></li>
-				<li className='connection-item'><ConnectionItem name={'Third'} sent={new Date().toJSON()}/></li>
-				<li className='connection-item'><ConnectionItem name={'Fourth'} sent={new Date().toJSON()}/></li>
+				{writtenListItems}
+				{uploadedListItems}
 			</ul>
 		</div>
 	)

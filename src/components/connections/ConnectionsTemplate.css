@@ -72,25 +72,27 @@
 		'sent';
 	place-items: center;
 	text-decoration: none;
-	
 
-	@media (width > 700px) {
+	@media (width > 450px) {
 		grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
 		grid-template-rows: 1fr 1fr;
 		grid-template-areas: 
-			'icon name'
 			'icon sent'
+			'icon name';
+		height: 60px;
+		width: 250px;
 	}
 }
 
 .connection-icon {
- grid-area: icon;
+	grid-area: icon;
 } 
 
 .connection-name {
- grid-area: name;
+	grid-area: name;
 }
 
 .connection-sent {
- grid-area: sent;
+	font-weight: bold;
+	grid-area: sent;
 }
