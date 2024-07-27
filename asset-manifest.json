@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/mock-app/static/css/main.2dafe32c.css",
+    "main.js": "/mock-app/static/js/main.f5af6c28.js",
+    "static/js/453.42f3a991.chunk.js": "/mock-app/static/js/453.42f3a991.chunk.js",
+    "index.html": "/mock-app/index.html",
+    "main.2dafe32c.css.map": "/mock-app/static/css/main.2dafe32c.css.map",
+    "main.f5af6c28.js.map": "/mock-app/static/js/main.f5af6c28.js.map",
+    "453.42f3a991.chunk.js.map": "/mock-app/static/js/453.42f3a991.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2dafe32c.css",
+    "static/js/main.f5af6c28.js"
+  ]
+}
