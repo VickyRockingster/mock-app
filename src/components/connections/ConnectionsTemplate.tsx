@@ -10,13 +10,11 @@ import { useLocation, useParams, useNavigate } from 'react-router-dom'
 type UploadedData = {
 	created: string
 	name: string
-	pk: Number
 }
 
 type WrittenData = {
 	created: string
 	text: string
-	pk: Number
 }
 
 function NewConnectionButton() {
