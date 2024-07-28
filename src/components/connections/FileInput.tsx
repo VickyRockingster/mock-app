@@ -5,12 +5,14 @@ import { useLocation } from 'react-router-dom'
 export default function FileInput() {
 	const [fileInputValue, setFileInputValue] = useState('')
 	const [fileValue, setFileValue] = useState<File | null>(null)
+	const [fileNameValue, setFileNameValue] = useState('')
 
 	function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
 		event.preventDefault()
     setFileInputValue(event.target.value)
 		if (event.target.files) {
 			setFileValue(event.target.files[0])
+			setFileNameValue(event.target.files[0].name)
 		}
   }
 
@@ -25,7 +27,7 @@ export default function FileInput() {
 			return
 		}
 		const formData: any = new FormData()
-		formData.append('name', fileInputValue)
+		formData.append('name', fileNameValue)
 		formData.append('file', fileValue)
 		try {
 			await axios.post(
@@ -56,7 +58,7 @@ export default function FileInput() {
 			{ 
 				fileInputValue ? 
 					<>
-						<div className='file-name'>{fileInputValue}</div>
+						<div className='file-name'>{fileNameValue}</div>
 						<button type='submit'>Submit</button> 
 					</>
 				: null
