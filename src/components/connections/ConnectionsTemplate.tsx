@@ -7,14 +7,11 @@ import LetterSvg from '../svgs/letter'
 import { useEffect, useState } from 'react'
 import { useLocation, useParams, useNavigate } from 'react-router-dom'
 
-type UploadedData = {
+type ConnectionItemData = {
 	created: string
-	name: string
-}
-
-type WrittenData = {
-	created: string
-	text: string
+	pk: number
+	name?: string
+	text?: string
 }
 
 function NewConnectionButton() {
@@ -31,7 +28,7 @@ function NewConnectionButton() {
 	)
 }
 
-function ConnectionItem(props: UploadedData | WrittenData) {
+function ConnectionItem(props: ConnectionItemData) {
 	const { name, created } = props
 	const [ icon, setIcon ] = useState()
 	const location = useLocation()
@@ -64,29 +61,27 @@ function ConnectionItem(props: UploadedData | WrittenData) {
 
 const getConnections = async (
 	resourcePath: string,
-	setUploadedConnectionListItems: React.Dispatch<React.SetStateAction<UploadedData[]>>,
-	setWrittenConnectionListItems: React.Dispatch<React.SetStateAction<WrittenData[]>>,
-	uploadedConnectionListItems: Array<any>,
-	writtenConnectionListItems: Array<any>
+	setUploadedConnectionListItems: React.Dispatch<React.SetStateAction<ConnectionItemData[]>>,
+	setWrittenConnectionListItems: React.Dispatch<React.SetStateAction<ConnectionItemData[]>>,
 ) => {
 	try {
 		const firstCall = axios({
 			method: 'get',
-			url: `http://localhost:8000/api/upload/${resourcePath}/`,
+			url: `https://vrockingster.pythonanywhere.com/api/upload/${resourcePath}/`,
 			responseType: 'json'
 		})
 
 		const secondCall = axios({
 			method: 'get',
-			url: `http://localhost:8000/api/write/${resourcePath}/`,
+			url: `https://vrockingster.pythonanywhere.com/api/write/${resourcePath}/`,
 			responseType: 'json'
 		})
 		const responses = await Promise.allSettled([firstCall, secondCall])
-		const uploadedData: Array<UploadedData> = responses[0].value.data
-		const writtenData: Array<WrittenData> = responses[1].value.data
+		const uploadedData: Array<ConnectionItemData> = responses[0].value.data
+		const writtenData: Array<ConnectionItemData> = responses[1].value.data
 		if (responses[0].status === 'fulfilled' && responses[1].status === 'fulfilled') {
-			setUploadedConnectionListItems([...uploadedConnectionListItems, ...uploadedData])
-			setWrittenConnectionListItems([...writtenConnectionListItems, ...writtenData])
+			setUploadedConnectionListItems([...uploadedData])
+			setWrittenConnectionListItems([...writtenData])
 		}
 	} catch (error) {
 		console.error('Error:', error)
@@ -94,8 +89,8 @@ const getConnections = async (
 }
 
 export default function ConnectionsTemplate() {
-	const [ uploadedConnectionListItems, setUploadedConnectionListItems ] = useState<Array<UploadedData>>([])
-	const [ writtenConnectionListItems, setWrittenConnectionListItems ] = useState<Array<WrittenData>>([])
+	const [ uploadedConnectionListItems, setUploadedConnectionListItems ] = useState<Array<ConnectionItemData>>([])
+	const [ writtenConnectionListItems, setWrittenConnectionListItems ] = useState<Array<ConnectionItemData>>([])
 	
 	const location = useLocation()
 	const resourcePath = location.pathname.split('/')[1]
@@ -104,16 +99,18 @@ export default function ConnectionsTemplate() {
 		getConnections(
 			resourcePath, 
 			setUploadedConnectionListItems, 
-			setWrittenConnectionListItems,
-			uploadedConnectionListItems,
-			writtenConnectionListItems)
+			setWrittenConnectionListItems)
 	}, [ location.pathname])
 
 	const uploadedListItems = uploadedConnectionListItems.map(listItem => (
-		<li key={listItem.pk} className='connection-item'><ConnectionItem name={listItem.name} created={listItem.created}/></li>
+		<li key={listItem.pk} className='connection-item'>
+			<ConnectionItem pk={listItem.pk} name={listItem.name} created={listItem.created}/>
+			</li>
 	))
 	const writtenListItems = writtenConnectionListItems.map(listItem => (
-		<li key={listItem.pk + '50'} className='connection-item'><ConnectionItem created={listItem.created}/></li>
+		<li key={listItem.pk + '50'} className='connection-item'>
+			<ConnectionItem pk={listItem.pk} created={listItem.created}/>
+		</li>
 	))
 	return (
 		<div>
