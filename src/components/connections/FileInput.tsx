@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from 'axios'
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
@@ -31,9 +31,9 @@ export default function FileInput() {
 		formData.append('file', fileValue)
 		try {
 			await axios.post(
-			`http://localhost:8000/api/upload/${resourcePath}/`,
-			formData,
-			{ headers: {'Content-Type': 'multipart/form-data'}})
+				`https://vrockingster.pythonanywhere.com/api/upload/${resourcePath}/`,
+				formData,
+			{ headers: {'Content-Type': 'multipart/form-data; boundary=--y0sEGDPbd38KvojG'}})
 		} catch(error) {
 			console.error('Error:', error)
 		}
@@ -47,7 +47,7 @@ export default function FileInput() {
 			<label className='visually-hidden' htmlFor='file-upload'>Upload</label>
 			<input
 			className='file-upload-input'
-			accept='image/*'
+			accept='.pdf, image/*'
 			name='file-upload'
 			id='file-upload'
 			type='file'

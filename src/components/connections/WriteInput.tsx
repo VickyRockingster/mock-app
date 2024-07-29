@@ -21,7 +21,7 @@ export default function WriteInput() {
 		formData.append('text', writeInputValue)
 		try {
 			await axios.post(
-			`http://localhost:8000/api/write/${resourcePath}/`,
+			`https://vrockingster.pythonanywhere.com/api/write/${resourcePath}/`,
 			formData,
 			{ headers: {'Content-Type': 'multipart/form-data'}})
 		} catch(error) {
